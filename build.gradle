@@ -20,7 +20,7 @@ apply plugin: 'application'
 
 sourceCompatibility = 1.11
 
-mainClassName = 'ru.test.App'
+mainClassName = ''
 
 repositories {
     mavenLocal()
@@ -32,5 +32,9 @@ dependencies {
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.0'
 }
 
+
+test {
+    useJUnitPlatform()
+}
 
 compileJava.options.encoding = 'UTF-8'

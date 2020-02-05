@@ -1,7 +1,8 @@
 package auction;
 
-import auction.bots.TestBotBidder;
-import auction.strategy.BruteForceStrategy;
+import auction.bots.BasicStrategy;
+import auction.bots.AnalyticStrategy;
+import auction.bots.BruteForceStrategy;
 import org.junit.jupiter.api.Test;
 
 import static auction.Props.ONE_POSITION;
@@ -16,20 +17,18 @@ public class BotBidderTest {
         var quantity = 46;
         var cash = 20000;
 
-        var realBidder = new BotBidder();
-        realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder(10);
-        testBidder.init(quantity, cash);
+        var realBidder = new DynamicBidStrategy();
+        var testBidder = new BasicStrategy(10);
 
         var auction = new Auction(quantity, cash);
+        auction.setRealStrategy(realBidder);
+        auction.setTestStrategy(testBidder);
 
         //when
-        while (auction.getQuantityUnits() > 0) {
-            auction.doBid(realBidder, testBidder);
-        }
+        auction.runGame();
 
         //then
-        assertTrue(Result.REAL_BOT == auction.whoWon() || Result.NOBODY_WON == auction.whoWon(),
+        assertTrue(Result.REAL_BOT == auction.whoWon() || Result.TIE == auction.whoWon(),
                 "Real bot won or nobody won");
     }
 
@@ -39,44 +38,42 @@ public class BotBidderTest {
         var quantity = 4000;
         var cash = 1000;
 
-        var realBidder = new BotBidder();
+        var realBidder = new DynamicBidStrategy();
         realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder(3);
+        var testBidder = new BasicStrategy(3);
         testBidder.init(quantity, cash);
 
         var auction = new Auction(quantity, cash);
+        auction.setRealStrategy(realBidder);
+        auction.setTestStrategy(testBidder);
 
         //when
-        while (auction.getQuantityUnits() > 0) {
-            auction.doBid(realBidder, testBidder);
-        }
+        auction.runGame();
 
         //then
-        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won or nobody won");
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won");
     }
 
     @Test
     void shouldWinRealBidderAllTimes() {
         //given
         var firstQuantity = 10;
-        var cash = 2000;
+        var cash = 200;
 
         var wonCount = 0;
         var looseCount = 0;
         var bothCount = 0;
 
-        for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += ONE_POSITION) {
-            var realBidder = new BotBidder();
-            realBidder.init(quantity, cash);
-            var testBidder = new TestBotBidder(4);
-            testBidder.init(quantity, cash);
+        for (int quantity = firstQuantity; quantity <= 2 * cash; quantity += ONE_POSITION) {
+            var realBidder = new DynamicBidStrategy();
+            var testBidder = new BasicStrategy(4);
 
             var auction = new Auction(quantity, cash);
+            auction.setRealStrategy(realBidder);
+            auction.setTestStrategy(testBidder);
 
             //when
-            while (auction.getQuantityUnits() > 0) {
-                auction.doBid(realBidder, testBidder);
-            }
+            auction.runGame();
 
             //then
             switch (auction.whoWon()) {
@@ -85,18 +82,15 @@ public class BotBidderTest {
                     break;
                 case TEST_BOT:
                     looseCount++;
-                    System.out.println("Loose when quantity = " + quantity);
                     break;
                 default:
                     bothCount++;
-                    System.out.println("Nobodu won when quantity = " + quantity);
                     break;
             }
         }
-        assertTrue(wonCount >= 0, "Real bot won " + wonCount + " times");
-        assertTrue(bothCount >= 0, "Nobody won " + bothCount + " times");
-        assertTrue(bothCount + wonCount > 0, "Test bot playd " + (bothCount + wonCount) + " times");
         assertEquals(0, looseCount, "Test bot won " + looseCount + " times");
+        assertTrue(wonCount >= 0, "Real bot won " + wonCount + " times");
+        assertEquals(0, bothCount, "Nobody won " + bothCount + " times");
     }
 
     @Test
@@ -105,20 +99,18 @@ public class BotBidderTest {
         var quantity = 10000;
         var cash = 100;
 
-        var realBidder = new BotBidder();
-        realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder(3);
-        testBidder.init(quantity, cash);
+        var realBidder = new DynamicBidStrategy();
+        var testBidder = new BasicStrategy(3);
 
         var auction = new Auction(quantity, cash);
+        auction.setRealStrategy(realBidder);
+        auction.setTestStrategy(testBidder);
 
         //when
-        while (auction.getQuantityUnits() > 0) {
-            auction.doBid(realBidder, testBidder);
-        }
+        auction.runGame();
 
         //then
-        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won or nobody won");
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won");
     }
 
     @Test
@@ -127,44 +119,40 @@ public class BotBidderTest {
         var quantity = 100;
         var cash = 20000;
 
-        var realBidder = new BotBidder();
-        realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder(new BruteForceStrategy(3));
-        testBidder.init(quantity, cash);
+        var realBidder = new DynamicBidStrategy();
+        var testBidder = new BruteForceStrategy(3);
 
         var auction = new Auction(quantity, cash);
+        auction.setRealStrategy(realBidder);
+        auction.setTestStrategy(testBidder);
 
         //when
-        while (auction.getQuantityUnits() > 0) {
-            auction.doBid(realBidder, testBidder);
-        }
+        auction.runGame();
 
         //then
-        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won or nobody won");
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won");
     }
 
     @Test
     void shouldWinRealBidderAllTimesOppositeOfBrutForceBot() {
         //given
         var firstQuantity = 10;
-        var cash = 2000;
+        var cash = 200;
 
         var wonCount = 0;
         var looseCount = 0;
         var bothCount = 0;
 
         for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += ONE_POSITION) {
-            var realBidder = new BotBidder();
-            realBidder.init(quantity, cash);
-            var testBidder = new TestBotBidder(new BruteForceStrategy(1));
-            testBidder.init(quantity, cash);
+            var realBidder = new DynamicBidStrategy();
+            var testBidder = new BruteForceStrategy(1);
 
             var auction = new Auction(quantity, cash);
+            auction.setRealStrategy(realBidder);
+            auction.setTestStrategy(testBidder);
 
             //when
-            while (auction.getQuantityUnits() > 0) {
-                auction.doBid(realBidder, testBidder);
-            }
+            auction.runGame();
 
             //then
             switch (auction.whoWon()) {
@@ -180,8 +168,27 @@ public class BotBidderTest {
             }
         }
         assertTrue(wonCount >= 0, "Real bot won " + wonCount + " times");
-        assertTrue(bothCount >= 0, "Nobody won " + bothCount + " times");
-        assertTrue(bothCount + wonCount > 0, "Test bot plaid " + (bothCount + wonCount) + " times");
+        assertEquals(0, bothCount, "Nobody won " + bothCount + " times");
         assertEquals(0, looseCount, "Test bot won " + looseCount + " times");
+    }
+
+    @Test
+    void shouldWinDynamicBidStrategy() {
+        //given
+        var quantity = 200;
+        var cash = 20000;
+        var auction = new Auction(quantity, cash);
+
+        var realBidder = new DynamicBidStrategy();
+        var testBidder = new AnalyticStrategy();
+
+        auction.setRealStrategy(realBidder);
+        auction.setTestStrategy(testBidder);
+
+        //when
+        auction.runGame();
+
+        //then
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won");
     }
 }
