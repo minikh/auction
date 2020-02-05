@@ -14,7 +14,7 @@ public class BruteForceStrategy extends Strategy {
         while (cash > 0) {
             sequence.add(bid);
             cash -= bid;
-            bid += 10;
+            bid += 1;
         }
     }
 

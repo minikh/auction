@@ -13,10 +13,10 @@ public class Auction {
     private int bid1Cash;
     private int bid2Cash;
 
-    public Auction(int quantityUnits, int cash1, int cash2) {
+    public Auction(int quantityUnits, int cash) {
         this.quantityUnits = quantityUnits;
-        bid1Cash = cash1;
-        bid2Cash = cash2;
+        bid1Cash = cash;
+        bid2Cash = cash;
     }
 
     void doBid(@NotNull Bidder bidder1, @NotNull Bidder bidder2) {

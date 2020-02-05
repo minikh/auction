@@ -8,7 +8,7 @@ public class BasicStrategy extends Strategy {
 
     @Override
     public int placeBid() {
-        return changeBalance(Math.max(otherPreviousBid, ownPreviousBid) + previousDeltaBid + 10);
+        return changeBalance(Math.max(otherPreviousBid, ownPreviousBid) + previousDeltaBid + 1);
     }
 
     @Override
