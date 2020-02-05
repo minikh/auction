@@ -12,13 +12,7 @@ public final class BotBidder implements Bidder {
 
     @Override
     public void init(int quantity, int cash) {
-        var bid = cash / (quantity / 2);
-
-        if (bid > 0) {
-            strategy = new CashDivideStrategy();
-        } else {
-            strategy = new AnalyticStrategy();
-        }
+        strategy = new AnalyticStrategy();
         strategy.init(quantity, cash);
     }
 

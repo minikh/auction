@@ -9,8 +9,8 @@ public final class TestBotBidder implements Bidder {
 
     private final Strategy strategy;
 
-    public TestBotBidder() {
-        strategy = new BasicStrategy();
+    public TestBotBidder(int step) {
+        strategy = new BasicStrategy(step);
     }
 
     public TestBotBidder(Strategy strategy) {

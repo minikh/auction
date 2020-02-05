@@ -4,6 +4,8 @@ import auction.bots.TestBotBidder;
 import auction.strategy.BruteForceStrategy;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,7 +19,7 @@ public class BotBidderTest {
 
         var realBidder = new BotBidder();
         realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder();
+        var testBidder = new TestBotBidder(3);
         testBidder.init(quantity, cash);
 
         var auction = new Auction(quantity, cash);
@@ -39,7 +41,7 @@ public class BotBidderTest {
 
         var realBidder = new BotBidder();
         realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder();
+        var testBidder = new TestBotBidder(3);
         testBidder.init(quantity, cash);
 
         var auction = new Auction(quantity, cash);
@@ -66,7 +68,7 @@ public class BotBidderTest {
         for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += 2) {
             var realBidder = new BotBidder();
             realBidder.init(quantity, cash);
-            var testBidder = new TestBotBidder();
+            var testBidder = new TestBotBidder(4);
             testBidder.init(quantity, cash);
 
             var auction = new Auction(quantity, cash);
@@ -103,7 +105,7 @@ public class BotBidderTest {
 
         var realBidder = new BotBidder();
         realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder();
+        var testBidder = new TestBotBidder(3);
         testBidder.init(quantity, cash);
 
         var auction = new Auction(quantity, cash);
@@ -125,7 +127,7 @@ public class BotBidderTest {
 
         var realBidder = new BotBidder();
         realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder(new BruteForceStrategy());
+        var testBidder = new TestBotBidder(new BruteForceStrategy(3));
         testBidder.init(quantity, cash);
 
         var auction = new Auction(quantity, cash);
@@ -152,7 +154,7 @@ public class BotBidderTest {
         for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += 2) {
             var realBidder = new BotBidder();
             realBidder.init(quantity, cash);
-            var testBidder = new TestBotBidder(new BruteForceStrategy());
+            var testBidder = new TestBotBidder(new BruteForceStrategy(3));
             testBidder.init(quantity, cash);
 
             var auction = new Auction(quantity, cash);

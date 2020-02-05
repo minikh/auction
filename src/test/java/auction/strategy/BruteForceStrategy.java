@@ -5,6 +5,11 @@ import java.util.LinkedList;
 public class BruteForceStrategy extends Strategy {
 
     private final LinkedList<Integer> sequence = new LinkedList<>();
+    private final int step;
+
+    public BruteForceStrategy(int step) {
+        this.step = step;
+    }
 
     @Override
     public void init(int quantity, int cash) {
@@ -14,7 +19,7 @@ public class BruteForceStrategy extends Strategy {
         while (cash > 0) {
             sequence.add(bid);
             cash -= bid;
-            bid += 1;
+            bid += step;
         }
     }
 
