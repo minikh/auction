@@ -2,6 +2,8 @@ package auction;
 
 import org.jetbrains.annotations.NotNull;
 
+import static auction.Props.IS_DEBUG;
+
 public class Auction {
 
     private int quantityUnits;
@@ -36,19 +38,21 @@ public class Auction {
         bidder2.bids(bid2, bid1);
         quantityUnits -= 2;
 
-        var msg = String.format("Result: %s : %s | %s : %s \n",
-                bidder1.getClass().getSimpleName(), bidder2.getClass().getSimpleName(), bid1Sum, bid2Sum);
-        System.out.println(msg);
+        if (IS_DEBUG) {
+            var msg = String.format("Result: %s : %s | %s : %s \n",
+                    bidder1.getClass().getSimpleName(), bidder2.getClass().getSimpleName(), bid1Sum, bid2Sum);
+            System.out.println(msg);
+        }
     }
 
-    public int whoWon() {
-        if (bid1Sum > bid2Sum) return 1;
-        if (bid2Sum > bid1Sum) return 2;
+    public Result whoWon() {
+        if (bid1Sum > bid2Sum) return Result.REAL_BOT;
+        if (bid2Sum > bid1Sum) return Result.TEST_BOT;
 
-        if (bid1Cash > bid2Cash) return 1;
-        if (bid2Cash > bid1Cash) return 2;
+        if (bid1Cash > bid2Cash) return Result.REAL_BOT;
+        if (bid2Cash > bid1Cash) return Result.TEST_BOT;
 
-        return 0;
+        return Result.BOTH;
     }
 
     public int getQuantityUnits() {

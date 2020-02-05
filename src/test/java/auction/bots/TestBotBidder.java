@@ -1,24 +1,24 @@
-package auction;
+package auction.bots;
 
-import auction.strategy.AnalyticStrategy;
-import auction.strategy.CashDivideStrategy;
+import auction.Bidder;
+import auction.strategy.BasicStrategy;
 import auction.strategy.Strategy;
-
 import static auction.Props.IS_DEBUG;
 
-public final class BotBidder implements Bidder {
+public final class TestBotBidder implements Bidder {
 
-    private Strategy strategy;
+    private final Strategy strategy;
+
+    public TestBotBidder() {
+        strategy = new BasicStrategy();
+    }
+
+    public TestBotBidder(Strategy strategy) {
+        this.strategy = strategy;
+    }
 
     @Override
     public void init(int quantity, int cash) {
-        var bid = cash / (quantity / 2);
-
-        if (bid > 0) {
-            strategy = new CashDivideStrategy();
-        } else {
-            strategy = new AnalyticStrategy();
-        }
         strategy.init(quantity, cash);
     }
 
