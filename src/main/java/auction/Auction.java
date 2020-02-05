@@ -3,6 +3,7 @@ package auction;
 import org.jetbrains.annotations.NotNull;
 
 import static auction.Props.IS_DEBUG;
+import static auction.Props.ONE_POSITION;
 
 public class Auction {
 
@@ -26,17 +27,17 @@ public class Auction {
         bid2Cash -= bid2;
 
         if (bid1 > bid2) {
-            bid1Sum += 2;
+            bid1Sum += ONE_POSITION;
         } else if (bid2 > bid1) {
-            bid2Sum += 2;
+            bid2Sum += ONE_POSITION;
         } else {
-            bid1Sum++;
-            bid2Sum++;
+            bid1Sum += ONE_POSITION / 2;
+            bid2Sum += ONE_POSITION / 2;
         }
 
         bidder1.bids(bid1, bid2);
         bidder2.bids(bid2, bid1);
-        quantityUnits -= 2;
+        quantityUnits -= ONE_POSITION;
 
         if (IS_DEBUG) {
             var msg = String.format("Result: %s : %s | %s : %s \n",
@@ -52,7 +53,7 @@ public class Auction {
         if (bid1Cash > bid2Cash) return Result.REAL_BOT;
         if (bid2Cash > bid1Cash) return Result.TEST_BOT;
 
-        return Result.BOTH;
+        return Result.NOBODY_WON;
     }
 
     public int getQuantityUnits() {

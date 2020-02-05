@@ -1,7 +1,6 @@
 package auction;
 
 import auction.strategy.AnalyticStrategy;
-import auction.strategy.CashDivideStrategy;
 import auction.strategy.Strategy;
 
 import static auction.Props.IS_DEBUG;

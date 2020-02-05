@@ -1,5 +1,7 @@
 package auction.strategy;
 
+import static auction.Props.ONE_POSITION;
+
 public class CashDivideStrategy extends Strategy {
 
     private int bid;
@@ -7,7 +9,7 @@ public class CashDivideStrategy extends Strategy {
     @Override
     public void init(int quantity, int cash) {
         super.init(quantity, cash);
-        bid = cash / (quantity / 2);
+        bid = cash / (quantity / ONE_POSITION);
     }
 
     @Override

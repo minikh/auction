@@ -2,6 +2,8 @@ package auction.strategy;
 
 import java.util.LinkedList;
 
+import static auction.Props.ONE_POSITION;
+
 public class BruteForceStrategy extends Strategy {
 
     private final LinkedList<Integer> sequence = new LinkedList<>();
@@ -15,7 +17,7 @@ public class BruteForceStrategy extends Strategy {
     public void init(int quantity, int cash) {
         super.init(quantity, cash);
 
-        var bid = cash / (quantity / 2);
+        var bid = cash / (quantity / ONE_POSITION);
         while (cash > 0) {
             sequence.add(bid);
             cash -= bid;

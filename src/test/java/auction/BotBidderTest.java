@@ -4,22 +4,21 @@ import auction.bots.TestBotBidder;
 import auction.strategy.BruteForceStrategy;
 import org.junit.jupiter.api.Test;
 
-import java.util.Random;
-
+import static auction.Props.ONE_POSITION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BotBidderTest {
 
     @Test
-    void shouldWinRealBidder() {
+    void shouldWinRealBidderOrNobodyWonIsPossible() {
         //given
         var quantity = 46;
         var cash = 20000;
 
         var realBidder = new BotBidder();
         realBidder.init(quantity, cash);
-        var testBidder = new TestBotBidder(3);
+        var testBidder = new TestBotBidder(10);
         testBidder.init(quantity, cash);
 
         var auction = new Auction(quantity, cash);
@@ -30,7 +29,8 @@ public class BotBidderTest {
         }
 
         //then
-        assertEquals(Result.REAL_BOT, auction.whoWon());
+        assertTrue(Result.REAL_BOT == auction.whoWon() || Result.NOBODY_WON == auction.whoWon(),
+                "Real bot won or nobody won");
     }
 
     @Test
@@ -52,7 +52,7 @@ public class BotBidderTest {
         }
 
         //then
-        assertEquals(Result.REAL_BOT, auction.whoWon());
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won or nobody won");
     }
 
     @Test
@@ -65,7 +65,7 @@ public class BotBidderTest {
         var looseCount = 0;
         var bothCount = 0;
 
-        for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += 2) {
+        for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += ONE_POSITION) {
             var realBidder = new BotBidder();
             realBidder.init(quantity, cash);
             var testBidder = new TestBotBidder(4);
@@ -85,16 +85,18 @@ public class BotBidderTest {
                     break;
                 case TEST_BOT:
                     looseCount++;
+                    System.out.println("Loose when quantity = " + quantity);
                     break;
                 default:
                     bothCount++;
+                    System.out.println("Nobodu won when quantity = " + quantity);
                     break;
             }
         }
-        assertTrue(wonCount >= 0);
-        assertTrue(bothCount >= 0);
-        assertTrue(bothCount + wonCount > 0);
-        assertEquals(0, looseCount);
+        assertTrue(wonCount >= 0, "Real bot won " + wonCount + " times");
+        assertTrue(bothCount >= 0, "Nobody won " + bothCount + " times");
+        assertTrue(bothCount + wonCount > 0, "Test bot playd " + (bothCount + wonCount) + " times");
+        assertEquals(0, looseCount, "Test bot won " + looseCount + " times");
     }
 
     @Test
@@ -116,7 +118,7 @@ public class BotBidderTest {
         }
 
         //then
-        assertEquals(Result.REAL_BOT, auction.whoWon());
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won or nobody won");
     }
 
     @Test
@@ -138,7 +140,7 @@ public class BotBidderTest {
         }
 
         //then
-        assertEquals(Result.REAL_BOT, auction.whoWon());
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won or nobody won");
     }
 
     @Test
@@ -151,10 +153,10 @@ public class BotBidderTest {
         var looseCount = 0;
         var bothCount = 0;
 
-        for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += 2) {
+        for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += ONE_POSITION) {
             var realBidder = new BotBidder();
             realBidder.init(quantity, cash);
-            var testBidder = new TestBotBidder(new BruteForceStrategy(3));
+            var testBidder = new TestBotBidder(new BruteForceStrategy(1));
             testBidder.init(quantity, cash);
 
             var auction = new Auction(quantity, cash);
@@ -177,9 +179,9 @@ public class BotBidderTest {
                     break;
             }
         }
-        assertTrue(wonCount >= 0);
-        assertTrue(bothCount >= 0);
-        assertTrue(bothCount + wonCount > 0);
-        assertEquals(0, looseCount);
+        assertTrue(wonCount >= 0, "Real bot won " + wonCount + " times");
+        assertTrue(bothCount >= 0, "Nobody won " + bothCount + " times");
+        assertTrue(bothCount + wonCount > 0, "Test bot plaid " + (bothCount + wonCount) + " times");
+        assertEquals(0, looseCount, "Test bot won " + looseCount + " times");
     }
 }

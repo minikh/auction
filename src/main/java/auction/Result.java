@@ -1,5 +1,5 @@
 package auction;
 
 public enum Result {
-    REAL_BOT, TEST_BOT, BOTH
+    REAL_BOT, TEST_BOT, NOBODY_WON
 }
