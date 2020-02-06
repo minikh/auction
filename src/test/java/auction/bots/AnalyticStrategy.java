@@ -3,7 +3,7 @@ package auction.bots;
 import auction.Bidder;
 
 import static auction.Props.IS_DEBUG;
-import static auction.Props.ONE_POSITION;
+import static auction.Props.ONE_LOT;
 
 /**
  * This is a test strategy for bidding
@@ -27,7 +27,7 @@ public final class AnalyticStrategy implements Bidder {
     public int placeBid() {
         final var bidder1CurrCash = cash - otherCurrentCash;
 
-        final var bid1 = bidder1CurrCash / (currentQuantity / ONE_POSITION);
+        final var bid1 = bidder1CurrCash / (currentQuantity / ONE_LOT);
         final var bid2 = otherPreviousBid + previousDeltaBid + 1;
 
         var bid = Math.max(bid1, bid2);
@@ -47,7 +47,7 @@ public final class AnalyticStrategy implements Bidder {
     @Override
     public void bids(final int own, final int other) {
         otherCurrentCash -= other;
-        currentQuantity -= ONE_POSITION;
+        currentQuantity -= ONE_LOT;
         otherPreviousBid = other;
 
         if (other > own) {

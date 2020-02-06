@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static auction.Props.IS_DEBUG;
-import static auction.Props.ONE_POSITION;
+import static auction.Props.ONE_LOT;
 
 /**
  * This is the main strategy for bidding
@@ -18,7 +18,7 @@ public final class DynamicBidStrategy implements Bidder {
 
     @Override
     public void init(int quantity, int cash) {
-        this.rounds = quantity / ONE_POSITION;
+        this.rounds = quantity / ONE_LOT;
         this.cash = cash;
     }
 

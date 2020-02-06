@@ -4,7 +4,7 @@ import auction.Bidder;
 
 import java.util.LinkedList;
 
-import static auction.Props.ONE_POSITION;
+import static auction.Props.ONE_LOT;
 
 /**
  * This is a test strategy for bidding
@@ -22,7 +22,7 @@ public final class BruteForceStrategy implements Bidder {
     @Override
     public void init(final int quantity, final int cash) {
         this.cash = cash;
-        var bid = cash / (quantity / ONE_POSITION);
+        var bid = cash / (quantity / ONE_LOT);
         while (this.cash > 0) {
             sequence.add(bid);
             this.cash -= bid;

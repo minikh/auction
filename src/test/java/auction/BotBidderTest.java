@@ -5,7 +5,7 @@ import auction.bots.AnalyticStrategy;
 import auction.bots.BruteForceStrategy;
 import org.junit.jupiter.api.Test;
 
-import static auction.Props.ONE_POSITION;
+import static auction.Props.ONE_LOT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -64,7 +64,7 @@ public class BotBidderTest {
         var looseCount = 0;
         var tieCount = 0;
 
-        for (int quantity = firstQuantity; quantity <= 2 * cash; quantity += ONE_POSITION) {
+        for (int quantity = firstQuantity; quantity <= 2 * cash; quantity += ONE_LOT) {
             var realBidder = new DynamicBidStrategy();
             var testBidder = new BasicStrategy(4);
 
@@ -145,7 +145,7 @@ public class BotBidderTest {
         var looseCount = 0;
         var tieCount = 0;
 
-        for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += ONE_POSITION) {
+        for (int quantity = firstQuantity; quantity <= 5 * cash; quantity += ONE_LOT) {
             var realBidder = new DynamicBidStrategy();
             var testBidder = new BruteForceStrategy(1);
 

@@ -1,7 +1,7 @@
 package auction;
 
 import static auction.Props.IS_DEBUG;
-import static auction.Props.ONE_POSITION;
+import static auction.Props.ONE_LOT;
 
 public final class Auction {
 
@@ -29,7 +29,7 @@ public final class Auction {
 
         while (remains > 0) {
             doBids();
-            remains -= ONE_POSITION;
+            remains -= ONE_LOT;
         }
     }
 
@@ -38,12 +38,12 @@ public final class Auction {
         final var bid2 = auctioneer2.getBid();
 
         if (bid1 > bid2) {
-            auctioneer1.addUnit(ONE_POSITION);
+            auctioneer1.addUnit(ONE_LOT);
         } else if (bid2 > bid1) {
-            auctioneer2.addUnit(ONE_POSITION);
+            auctioneer2.addUnit(ONE_LOT);
         } else {
-            auctioneer1.addUnit(ONE_POSITION / 2);
-            auctioneer2.addUnit(ONE_POSITION / 2);
+            auctioneer1.addUnit(ONE_LOT / 2);
+            auctioneer2.addUnit(ONE_LOT / 2);
         }
 
         auctioneer1.bids(bid1, bid2);
