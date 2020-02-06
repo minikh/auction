@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class BotBidderTest {
 
     @Test
-    void shouldWinRealBidderOrNobodyWonIsPossible() {
+    void shouldWinRealBidder() {
         //given
         var quantity = 46;
         var cash = 20000;
@@ -28,8 +28,7 @@ public class BotBidderTest {
         auction.runGame();
 
         //then
-        assertTrue(Result.REAL_BOT == auction.whoWon() || Result.TIE == auction.whoWon(),
-                "Real bot won or nobody won");
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won");
     }
 
     @Test
@@ -212,5 +211,25 @@ public class BotBidderTest {
 
         //then
         assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won");
+    }
+
+    @Test
+    void shouldTieSameStrategies() {
+        //given
+        var quantity = 500;
+        var cash = 200000;
+
+        var realBidder = new DynamicBidStrategy();
+        var testBidder = new DynamicBidStrategy();
+
+        var auction = new Auction(quantity, cash);
+        auction.setRealStrategy(realBidder);
+        auction.setTestStrategy(testBidder);
+
+        //when
+        auction.runGame();
+
+        //then
+        assertEquals(Result.TIE, auction.whoWon(), "Nobody won");
     }
 }
