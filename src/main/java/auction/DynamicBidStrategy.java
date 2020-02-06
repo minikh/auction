@@ -36,7 +36,7 @@ public final class DynamicBidStrategy implements Bidder {
             baseBid = (int) (baseBid * 0.7);
         } else if (myMoney > hisMoney && !amIWinning()) {
             //if I have more money than another and I am not winning, I can make the baseBid more
-            baseBid = (int) (baseBid * 1.2);
+            baseBid = (int) (baseBid * 2.0);
         } else if (myMoney < hisMoney && amIWinning()) {
             //if I have less money than another and I am winning, I can make the baseBid less
             baseBid = (int) (baseBid * 0.6);

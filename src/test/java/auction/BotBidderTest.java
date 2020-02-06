@@ -90,9 +90,8 @@ public class BotBidderTest {
 
         //then
         assertEquals(0, looseCount, "Test bot won " + looseCount + " times");
-        assertTrue(wonCount >= 0, "Real bot won " + wonCount + " times");
-        //fixme is it possible that nobody won two times?
-        assertEquals(2, tieCount, "Nobody won " + tieCount + " times");
+        assertEquals(0, tieCount, "Nobody won " + tieCount + " times");
+        assertTrue(wonCount > 0, "Real bot won " + wonCount + " times");
     }
 
     @Test
@@ -170,7 +169,7 @@ public class BotBidderTest {
         }
 
         //then
-        assertTrue(wonCount >= 0, "Real bot won " + wonCount + " times");
+        assertTrue(wonCount > 0, "Real bot won " + wonCount + " times");
         assertEquals(0, tieCount, "Nobody won " + tieCount + " times");
         assertEquals(0, looseCount, "Test bot won " + looseCount + " times");
     }
@@ -185,6 +184,26 @@ public class BotBidderTest {
         var realBidder = new DynamicBidStrategy();
         var testBidder = new AnalyticStrategy();
 
+        auction.setRealStrategy(realBidder);
+        auction.setTestStrategy(testBidder);
+
+        //when
+        auction.runGame();
+
+        //then
+        assertEquals(Result.REAL_BOT, auction.whoWon(), "Real bot won");
+    }
+
+    @Test
+    void shouldWinRealBidderWhenQuantityIs12() {
+        //given
+        var quantity = 12;
+        var cash = 200;
+
+        var realBidder = new DynamicBidStrategy();
+        var testBidder = new BasicStrategy(4);
+
+        var auction = new Auction(quantity, cash);
         auction.setRealStrategy(realBidder);
         auction.setTestStrategy(testBidder);
 
