@@ -8,10 +8,12 @@ import kotlin.math.max
  * This is a test strategy for bidding
  */
 class BasicStrategy(private val step: Int) : Bidder {
+
     private var otherPreviousBid = 0
     private var ownPreviousBid = 0
     private var previousDeltaBid = 0
     private var cash = 0
+
     override fun init(quantity: Int, cash: Int) {
         this.cash = cash
     }

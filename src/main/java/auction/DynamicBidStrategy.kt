@@ -7,10 +7,12 @@ import kotlin.math.min
  * This is the main strategy for bidding
  */
 class DynamicBidStrategy : Bidder {
+
     private var rounds = 0
     private var cash = 0
     private val ownBids: MutableList<Int> = ArrayList()
     private val otherBids: MutableList<Int> = ArrayList()
+
     override fun init(quantity: Int, cash: Int) {
         rounds = quantity / Props.ONE_LOT
         this.cash = cash
@@ -61,11 +63,11 @@ class DynamicBidStrategy : Bidder {
     }
 
     private fun ownMoney(): Int { //fixme here we can think about optimisation
-        return cash - ownBids.stream().reduce(0) { a: Int, b: Int -> Integer.sum(a, b) }
+        return cash - ownBids.sum()
     }
 
     private fun otherMoney(): Int { //fixme here we can think about optimisation
-        return cash - otherBids.stream().reduce(0) { a: Int, b: Int -> Integer.sum(a, b) }
+        return cash - otherBids.sum()
     }
 
     private fun remainRound(): Int {
