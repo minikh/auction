@@ -1,88 +1,74 @@
-package auction;
+package auction
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static auction.Props.IS_DEBUG;
-import static auction.Props.ONE_LOT;
+import java.util.*
+import kotlin.math.min
 
 /**
  * This is the main strategy for bidding
  */
-public final class DynamicBidStrategy implements Bidder {
-
-    private int rounds;
-    private int cash;
-    private final List<Integer> ownBids = new ArrayList<>();
-    private final List<Integer> otherBids = new ArrayList<>();
-
-    @Override
-    public void init(int quantity, int cash) {
-        this.rounds = quantity / ONE_LOT;
-        this.cash = cash;
+class DynamicBidStrategy : Bidder {
+    private var rounds = 0
+    private var cash = 0
+    private val ownBids: MutableList<Int> = ArrayList()
+    private val otherBids: MutableList<Int> = ArrayList()
+    override fun init(quantity: Int, cash: Int) {
+        rounds = quantity / Props.ONE_LOT
+        this.cash = cash
     }
 
-    @Override
-    public int placeBid() {
-        final int myMoney = ownMoney();
-        final int hisMoney = otherMoney();
-
-        int baseBid = myMoney / remainRound();
+    override fun placeBid(): Int {
+        val myMoney = ownMoney()
+        val hisMoney = otherMoney()
+        var baseBid = myMoney / remainRound()
 
         //todo think about how to calculate coefficients dynamically
         //these magic numbers has been found empirically
-        if (myMoney > hisMoney && amIWinning()) {
+        baseBid = when {
             //if I have more money than another and I am winning, I can make the baseBid less
-            baseBid = (int) (baseBid * 0.7);
-        } else if (myMoney > hisMoney && !amIWinning()) {
+            myMoney > hisMoney && amIWinning() -> (baseBid * 0.7).toInt()
             //if I have more money than another and I am not winning, I can make the baseBid more
-            baseBid = (int) (baseBid * 2.0);
-        } else if (myMoney < hisMoney && amIWinning()) {
+            myMoney > hisMoney && !amIWinning() -> (baseBid * 2.0).toInt()
             //if I have less money than another and I am winning, I can make the baseBid less
-            baseBid = (int) (baseBid * 0.6);
-        } else if (myMoney < hisMoney && !amIWinning()) {
+            myMoney < hisMoney && amIWinning() -> (baseBid * 0.6).toInt()
             //if I have less money than another and I am not winning, I can make the baseBid more less
-            baseBid = (int) (baseBid * 0.2);
+            myMoney < hisMoney && !amIWinning() -> (baseBid * 0.2).toInt()
+            else -> baseBid
         }
-
-        final var bid = Math.min(myMoney, baseBid);
-        if (IS_DEBUG) {
-            System.out.println(String.format("%s. cash = %s bid = %s", this.getClass().getSimpleName(), cash, bid));
+        val bid = min(myMoney, baseBid)
+        if (Props.IS_DEBUG) {
+            println(String.format("%s. cash = %s bid = %s", this.javaClass.simpleName, cash, bid))
         }
-        return bid;
+        return bid
     }
 
-    @Override
-    public void bids(final int own, final int other) {
-        ownBids.add(own);
-        otherBids.add(other);
+    override fun bids(own: Int, other: Int) {
+        ownBids.add(own)
+        otherBids.add(other)
     }
 
-    private boolean amIWinning() {
-        int index = 0;
-        int winCount = 0;
-        while (ownBids.size() > index) {
-            if (ownBids.get(index) > otherBids.get(index)) {
-                winCount++;
+    private fun amIWinning(): Boolean {
+        var index = 0
+        var winCount = 0
+        while (ownBids.size > index) {
+            if (ownBids[index] > otherBids[index]) {
+                winCount++
             } else {
-                winCount--;
+                winCount--
             }
-            index++;
+            index++
         }
-        return winCount > 0;
+        return winCount > 0
     }
 
-    private int ownMoney() {
-        //fixme here we can think about optimisation
-        return cash - ownBids.stream().reduce(0, Integer::sum);
+    private fun ownMoney(): Int { //fixme here we can think about optimisation
+        return cash - ownBids.stream().reduce(0) { a: Int, b: Int -> Integer.sum(a, b) }
     }
 
-    private int otherMoney() {
-        //fixme here we can think about optimisation
-        return cash - otherBids.stream().reduce(0, Integer::sum);
+    private fun otherMoney(): Int { //fixme here we can think about optimisation
+        return cash - otherBids.stream().reduce(0) { a: Int, b: Int -> Integer.sum(a, b) }
     }
 
-    private int remainRound() {
-        return rounds - ownBids.size();
+    private fun remainRound(): Int {
+        return rounds - ownBids.size
     }
 }

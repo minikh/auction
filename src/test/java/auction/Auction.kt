@@ -1,124 +1,93 @@
-package auction;
+package auction
 
-import static auction.Props.IS_DEBUG;
-import static auction.Props.ONE_LOT;
+class Auction(private val quantityUnits: Int, private val cash: Int) {
+    private lateinit var auctioneer1: Auctioneer
+    private lateinit var auctioneer2: Auctioneer
 
-public final class Auction {
-
-    private final int quantityUnits;
-    private final int cash;
-
-    private Auctioneer auctioneer1;
-    private Auctioneer auctioneer2;
-
-    public Auction(final int quantityUnits, final int cash) {
-        this.quantityUnits = quantityUnits;
-        this.cash = cash;
+    fun setRealStrategy(strategy: Bidder) {
+        auctioneer1 = Auctioneer(strategy, quantityUnits, cash)
     }
 
-    public void setRealStrategy(final Bidder strategy) {
-        auctioneer1 = new Auctioneer(strategy, quantityUnits, cash);
+    fun setTestStrategy(strategy: Bidder) {
+        auctioneer2 = Auctioneer(strategy, quantityUnits, cash)
     }
 
-    public void setTestStrategy(final Bidder strategy) {
-        auctioneer2 = new Auctioneer(strategy, quantityUnits, cash);
-    }
-
-    public void runGame() {
-        var remains = quantityUnits;
-
+    fun runGame() {
+        var remains = quantityUnits
         while (remains > 0) {
-            doBids();
-            remains -= ONE_LOT;
+            doBids()
+            remains -= Props.ONE_LOT
         }
     }
 
-    private void doBids() {
-        final var bid1 = auctioneer1.getBid();
-        final var bid2 = auctioneer2.getBid();
-
-        if (bid1 > bid2) {
-            auctioneer1.addUnit(ONE_LOT);
-        } else if (bid2 > bid1) {
-            auctioneer2.addUnit(ONE_LOT);
-        } else {
-            auctioneer1.addUnit(ONE_LOT / 2);
-            auctioneer2.addUnit(ONE_LOT / 2);
+    private fun doBids() {
+        val bid1 = auctioneer1.bid
+        val bid2 = auctioneer2.bid
+        when {
+            bid1 > bid2 -> auctioneer1.addUnit(Props.ONE_LOT)
+            bid2 > bid1 -> auctioneer2.addUnit(Props.ONE_LOT)
+            else -> {
+                auctioneer1.addUnit(Props.ONE_LOT / 2)
+                auctioneer2.addUnit(Props.ONE_LOT / 2)
+            }
         }
-
-        auctioneer1.bids(bid1, bid2);
-        auctioneer2.bids(bid2, bid1);
-
-        printResult();
+        auctioneer1.bids(bid1, bid2)
+        auctioneer2.bids(bid2, bid1)
+        printResult()
     }
 
-    public Result whoWon() {
-        if (auctioneer1.getCurrentLotsCount() > auctioneer2.getCurrentLotsCount()) return Result.REAL_BOT;
-        if (auctioneer1.getCurrentLotsCount() < auctioneer2.getCurrentLotsCount()) return Result.TEST_BOT;
-
-        if (auctioneer1.getSpentCash() < auctioneer2.getSpentCash()) return Result.REAL_BOT;
-        if (auctioneer1.getSpentCash() > auctioneer2.getSpentCash()) return Result.TEST_BOT;
-
-        return Result.TIE;
-    }
-
-    private void printResult() {
-        if (IS_DEBUG) {
-            final var msg = String.format("Result: %s : %s | %s : %s \n",
-                    auctioneer1.name(), auctioneer2.name(), auctioneer1.getCurrentLotsCount(), auctioneer2.getCurrentLotsCount());
-            System.out.println(msg);
+    fun whoWon(): Result {
+        return when {
+            auctioneer1.currentLotsCount > auctioneer2.currentLotsCount -> Result.REAL_BOT
+            auctioneer1.currentLotsCount < auctioneer2.currentLotsCount -> Result.TEST_BOT
+            auctioneer1.spentCash < auctioneer2.spentCash -> Result.REAL_BOT
+            auctioneer1.spentCash > auctioneer2.spentCash -> Result.TEST_BOT
+            else -> Result.TIE
         }
     }
 
-    private final static class Auctioneer {
-        private final int startBalance;
-        private final Bidder strategy;
+    private fun printResult() {
+        if (Props.IS_DEBUG) {
+            val msg =
+                "Result: ${auctioneer1.name()} : ${auctioneer2.name()} | ${auctioneer1.currentLotsCount} : ${auctioneer2.currentLotsCount}"
+            println(msg)
+        }
+    }
 
-        private int currentLotsAmount;
-        private int spentCash;
+    private class Auctioneer(private val strategy: Bidder, quantity: Int, private val startBalance: Int) {
+        var currentLotsCount = 0
+            private set
+        var spentCash = 0
+            private set
 
-        public Auctioneer(final Bidder strategy, final int quantity, final int cash) {
-            this.strategy = strategy;
-            this.startBalance = cash;
-            strategy.init(quantity, cash);
+        fun addUnit(count: Int) {
+            currentLotsCount += count
         }
 
-        public void addUnit(final int count) {
-            currentLotsAmount += count;
-        }
-
-        public int getBid() {
-            final int bid = strategy.placeBid();
-
-            spendCash(bid);
-
-            if (IS_DEBUG) {
-                final var msg =
-                        String.format("%s. cash remain = %s bid = %s", String.format("%-30s", name()), startBalance - getSpentCash(), bid);
-                System.out.println(msg);
+        val bid: Int
+            get() {
+                val bid = strategy.placeBid()
+                spendCash(bid)
+                if (Props.IS_DEBUG) {
+                    val msg = "${name()}. cash remain = ${startBalance - spentCash} = $bid"
+                    println(msg)
+                }
+                return bid
             }
 
-            return bid;
+        fun bids(bid1: Int, bid2: Int) {
+            strategy.bids(bid1, bid2)
         }
 
-        public void bids(final int bid1, final int bid2) {
-            strategy.bids(bid1, bid2);
+        fun name(): String = strategy.javaClass.simpleName
+
+        private fun spendCash(cash: Int) {
+            spentCash += cash
         }
 
-        public String name() {
-            return strategy.getClass().getSimpleName();
-        }
-
-        public int getCurrentLotsCount() {
-            return currentLotsAmount;
-        }
-
-        public int getSpentCash() {
-            return spentCash;
-        }
-
-        private void spendCash(int cash) {
-            spentCash += cash;
+        init {
+            strategy.init(quantity, startBalance)
         }
     }
+
 }

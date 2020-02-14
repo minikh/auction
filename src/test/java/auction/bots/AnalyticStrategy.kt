@@ -1,59 +1,46 @@
-package auction.bots;
+package auction.bots
 
-import auction.Bidder;
-
-import static auction.Props.IS_DEBUG;
-import static auction.Props.ONE_LOT;
+import auction.Bidder
+import auction.Props
+import kotlin.math.max
 
 /**
  * This is a test strategy for bidding
  */
-public final class AnalyticStrategy implements Bidder {
+class AnalyticStrategy : Bidder {
+    private var otherPreviousBid = 0
+    private var previousDeltaBid = 0
+    private var currentQuantity = 0
+    private var cash = 0
+    private var otherCurrentCash = 0
 
-    private int otherPreviousBid;
-    private int previousDeltaBid;
-    private int currentQuantity;
-    private int cash;
-    private int otherCurrentCash;
-
-    @Override
-    public void init(final int quantity, final int cash) {
-        this.cash = cash;
-        otherCurrentCash = cash;
-        currentQuantity = quantity;
+    override fun init(quantity: Int, cash: Int) {
+        this.cash = cash
+        otherCurrentCash = cash
+        currentQuantity = quantity
     }
 
-    @Override
-    public int placeBid() {
-        final var bidder1CurrCash = cash - otherCurrentCash;
-
-        final var bid1 = bidder1CurrCash / (currentQuantity / ONE_LOT);
-        final var bid2 = otherPreviousBid + previousDeltaBid + 1;
-
-        var bid = Math.max(bid1, bid2);
+    override fun placeBid(): Int {
+        val bidder1CurrCash = cash - otherCurrentCash
+        val bid1 = bidder1CurrCash / (currentQuantity / Props.ONE_LOT)
+        val bid2 = otherPreviousBid + previousDeltaBid + 1
+        var bid = max(bid1, bid2)
         if (cash < bid) {
-            bid = cash;
-            cash = 0;
+            bid = cash
+            cash = 0
         } else {
-            cash -= bid;
+            cash -= bid
         }
-
-        if (IS_DEBUG) {
-            System.out.println(String.format("%s. cash = %s bid = %s", this.getClass().getSimpleName(), cash, bid));
+        if (Props.IS_DEBUG) {
+            println(String.format("%s. cash = %s bid = %s", this.javaClass.simpleName, cash, bid))
         }
-        return bid;
+        return bid
     }
 
-    @Override
-    public void bids(final int own, final int other) {
-        otherCurrentCash -= other;
-        currentQuantity -= ONE_LOT;
-        otherPreviousBid = other;
-
-        if (other > own) {
-            previousDeltaBid = other - own + 1;
-        } else {
-            previousDeltaBid = 0;
-        }
+    override fun bids(own: Int, other: Int) {
+        otherCurrentCash -= other
+        currentQuantity -= Props.ONE_LOT
+        otherPreviousBid = other
+        previousDeltaBid = if (other > own) other - own + 1 else 0
     }
 }

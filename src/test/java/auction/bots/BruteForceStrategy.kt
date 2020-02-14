@@ -1,52 +1,41 @@
-package auction.bots;
+package auction.bots
 
-import auction.Bidder;
-
-import java.util.LinkedList;
-
-import static auction.Props.ONE_LOT;
+import auction.Bidder
+import auction.Props
+import java.util.*
 
 /**
  * This is a test strategy for bidding
  */
-public final class BruteForceStrategy implements Bidder {
+class BruteForceStrategy(private val step: Int) : Bidder {
 
-    private final LinkedList<Integer> sequence = new LinkedList<>();
-    private final int step;
-    private int cash;
+    private val sequence = LinkedList<Int>()
+    private var cash = 0
 
-    public BruteForceStrategy(final int step) {
-        this.step = step;
-    }
-
-    @Override
-    public void init(final int quantity, final int cash) {
-        this.cash = cash;
-        var bid = cash / (quantity / ONE_LOT);
+    override fun init(quantity: Int, cash: Int) {
+        this.cash = cash
+        var bid = cash / (quantity / Props.ONE_LOT)
         while (this.cash > 0) {
-            sequence.add(bid);
-            this.cash -= bid;
-            bid += step;
+            sequence.add(bid)
+            this.cash -= bid
+            bid += step
         }
     }
 
-    @Override
-    public int placeBid() {
-        var bid = 0;
-        if (sequence.size() > 0) {
-            bid = sequence.removeFirst();
+    override fun placeBid(): Int {
+        var bid = 0
+        if (sequence.size > 0) {
+            bid = sequence.removeFirst()
         }
         if (cash < bid) {
-            bid = cash;
-            cash = 0;
+            bid = cash
+            cash = 0
         } else {
-            cash -= bid;
+            cash -= bid
         }
-        return bid;
+        return bid
     }
 
-    @Override
-    public void bids(final int own, final int other) {
+    override fun bids(own: Int, other: Int) {}
 
-    }
 }
